@@ -12,6 +12,7 @@ const (
 	EXECUTING = "EXECUTING"
 	COMPLETED = "COMPLETED"
 	ERROR= "ERROR"
+	FINISH
 )
 // job 快照
 type  JobSnapshot struct {

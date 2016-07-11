@@ -56,7 +56,7 @@ func (this *Invoker) invoke(jobSnapshot *entity.JobSnapshot) error {
 	this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "正在执行" + time.Now().Local().Format("2006-01-02 15:04:05"),entity.EXECUTING)
 	startTime := time.Now()
 
-	jobRequest := &common.JobRequest{JobSnapshot:jobSnapshot.Id,Params:jobSnapshot.Params,Status:common.EXECUTING}
+	jobRequest := &common.JobRequest{JobSnapshot:jobSnapshot.Id,Params:jobSnapshot.Params,Status:entity.INVOKING}
 
 	content,err := json.Marshal(jobRequest)
 
@@ -93,7 +93,8 @@ func (this *Invoker) invoke(jobSnapshot *entity.JobSnapshot) error {
 		jobSnapshot.TimeConsume = timeConsume
 		jobSnapshot.Result = result.Content
 		jobSnapshot.Ip = common.GetIPFromUrl(jobSnapshot.Url)
-		this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "执行成功 返回值:" + result.Message + time.Now().Local().Format("2006-01-02 15:04:05"),entity.COMPLETED)
+		this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "执行任务提交 返回值:" + result.Message + time.Now().Local().Format("2006-01-02 15:04:05"),entity.INVOKING)
+		go this.processCheckJobResult(jobSnapshot)
 
 	} else {
 		this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "执行失败:" + result.Message + time.Now().Local().Format("2006-01-02 15:04:05"),entity.ERROR)
@@ -132,3 +133,57 @@ func (this *Invoker) Init(jobInfo *entity.JobInfo,nextTime time.Time) (*entity.J
 	return snapshot, err
 }
 
+// 执行更新状态
+func (this *Invoker)processCheckJobResult(jobSnapshot *entity.JobSnapshot){
+
+	for   {
+
+		select {
+
+		 case <-time.After(time.Second * 5):
+
+			 jobRequest := &common.JobRequest{JobSnapshot:jobSnapshot.Id,Params:jobSnapshot.Params,Status:jobSnapshot.Status}
+
+			 content,err := json.Marshal(jobRequest)
+
+			 if err != nil {
+				 this.executeJobResult(jobSnapshot,"解析job请求参数出错" + time.Now().Local().Format("2006-01-02 15:04:05"),entity.ERROR)
+				 continue
+			 }
+
+			 resp,err := http.Post(jobSnapshot.Url,"application/json;charset=utf-8",bytes.NewBuffer(content))
+			 if err != nil {
+				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "不可用" + time.Now().Local().Format("2006-01-02 15:04:05"),entity.ERROR)
+				continue
+			 }
+
+			 body,err:= ioutil.ReadAll(resp.Body)
+
+			 if err!= nil {
+				 resp.Body.Close()
+				 continue
+			 }
+			 result := &common.JobResponse{}
+			 log.Println("body = ",string(body))
+			 err = json.Unmarshal(body,result)
+			 if err!= nil {
+				 resp.Body.Close()
+				continue
+			 }
+		 log.Println("result= ",result)
+			 if result.Status == entity.EXECUTING {
+				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果正在执行中..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.EXECUTING)
+			 } else if result.Status == entity.COMPLETED {
+				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果任务执行完成..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.COMPLETED)
+				 break
+			 } else {
+				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果任务执行失败..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.ERROR)
+				 break
+			 }
+
+
+
+
+		}
+	}
+}
