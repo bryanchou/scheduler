@@ -135,8 +135,8 @@ func (this *Invoker) Init(jobInfo *entity.JobInfo,nextTime time.Time) (*entity.J
 
 // 执行更新状态
 func (this *Invoker)processCheckJobResult(jobSnapshot *entity.JobSnapshot){
-
-	for   {
+	var quit bool = false
+	for !quit  {
 
 		select {
 
@@ -170,15 +170,17 @@ func (this *Invoker)processCheckJobResult(jobSnapshot *entity.JobSnapshot){
 				 resp.Body.Close()
 				continue
 			 }
-		 log.Println("result= ",result)
+		 	log.Println("result= ",result)
 			 if result.Status == entity.EXECUTING {
 				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果正在执行中..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.EXECUTING)
 			 } else if result.Status == entity.COMPLETED {
 				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果任务执行完成..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.COMPLETED)
-				 break
+				 log.Println("退出查询结果...")
+				  quit = true
 			 } else {
 				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果任务执行失败..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.ERROR)
-				 break
+				 log.Println("退出查询结果...")
+				  quit = true
 			 }
 
 
