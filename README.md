@@ -4,6 +4,8 @@
 ###### 为了解决此类问题，我们需要对任务的调度和执行进行分开。有统一的任务调度中心-专门进行任务的调度分发任务工作，各个任务的具体任务执行分配到个个项目中。从而达到对任务的统一配置和管理。
 
 
+![image](https://github.com/shotdog/scheduler/raw/master/screenshot/job.png)
+
 ###### 1、pre
 * install golang env
 
