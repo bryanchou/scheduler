@@ -53,7 +53,7 @@ func (this *Invoker)Execute(jobInfo *entity.JobInfo,nextTime time.Time,params st
 // 执行任务
 func (this *Invoker) invoke(jobSnapshot *entity.JobSnapshot) error {
 
-	this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "正在执行" + time.Now().Local().Format("2006-01-02 15:04:05"),entity.EXECUTING)
+	this.executeJobResult(jobSnapshot,"准备任务提交至目标服务器地址:" + jobSnapshot.Url  + time.Now().Local().Format("2006-01-02 15:04:05"),entity.INVOKING)
 	startTime := time.Now()
 
 	jobRequest := &common.JobRequest{JobSnapshot:jobSnapshot.Id,Params:jobSnapshot.Params,Status:entity.INVOKING}
@@ -93,7 +93,7 @@ func (this *Invoker) invoke(jobSnapshot *entity.JobSnapshot) error {
 		jobSnapshot.TimeConsume = timeConsume
 		jobSnapshot.Result = result.Content
 		jobSnapshot.Ip = common.GetIPFromUrl(jobSnapshot.Url)
-		this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "执行任务提交 返回值:" + result.Message + time.Now().Local().Format("2006-01-02 15:04:05"),entity.INVOKING)
+		this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "执行任务已经成功提交 "+ time.Now().Local().Format("2006-01-02 15:04:05"),entity.INVOKING)
 		go this.processCheckJobResult(jobSnapshot)
 
 	} else {
@@ -172,14 +172,12 @@ func (this *Invoker)processCheckJobResult(jobSnapshot *entity.JobSnapshot){
 			 }
 		 	log.Println("result= ",result)
 			 if result.Status == entity.EXECUTING {
-				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果正在执行中..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.EXECUTING)
+				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + " 正在执行中..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.EXECUTING)
 			 } else if result.Status == entity.COMPLETED {
-				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果任务执行完成..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.COMPLETED)
-				 log.Println("退出查询结果...")
+				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "任务执行完成..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.COMPLETED)
 				  quit = true
 			 } else {
-				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "结果任务执行失败..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.ERROR)
-				 log.Println("退出查询结果...")
+				 this.executeJobResult(jobSnapshot,"目标服务器地址:" + jobSnapshot.Url + "任务执行失败..." + time.Now().Local().Format("2006-01-02 15:04:05"),entity.ERROR)
 				  quit = true
 			 }
 
