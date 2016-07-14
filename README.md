@@ -15,13 +15,13 @@
 
 
 
-*        go get github.com/astaxie/beego
-
-*        go get github.com/shotdog/scheduler
-
+*        cd $GOPATH/src 
+*       git clone https://github.com/shotdog/scheduler 
+*       go get github.com/astaxie/beego
 *       go get github.com/shotdog/quartz
 
 *       go get  github.com/go-sql-driver/mysql
+*       
 *       init db  scheduler.sql
 *       modify conf/app.conf -->database config
 
