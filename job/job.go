@@ -1,7 +1,7 @@
 package job
 
 import (
-	"quartz"
+	"github.com/shotdog/quartz"
 	"scheduler/common"
 	"scheduler/entity"
 	"errors"
