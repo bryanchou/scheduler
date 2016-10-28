@@ -136,11 +136,12 @@ func (this *Invoker) Init(jobInfo *entity.JobInfo,nextTime time.Time) (*entity.J
 // 执行更新状态
 func (this *Invoker)processCheckJobResult(jobSnapshot *entity.JobSnapshot){
 	var quit bool = false
-	for !quit  {
+	var tick =time.Tick(time.Second * 5)
+	for !quit {
 
 		select {
 
-		 case <-time.After(time.Second * 5):
+		case <-tick:
 
 			 jobRequest := &common.JobRequest{JobSnapshot:jobSnapshot.Id,Params:jobSnapshot.Params,Status:jobSnapshot.Status}
 
