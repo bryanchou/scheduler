@@ -61,3 +61,9 @@
    * cd scheduler-client
    * go build main.go
    * ./main
+   
+   
+   
+   ####7、Look
+   
+   the new version:https://github.com/shotdog/kitty
