@@ -37,19 +37,7 @@
 
 #### 4、Screenshot
 
-![image](https://github.com/shotdog/scheduler/raw/master/screenshot/1.png)
 
-![image](https://github.com/shotdog/scheduler/raw/master/screenshot/2.png)
-
-![image](https://github.com/shotdog/scheduler/raw/master/screenshot/3.png)
-
-![image](https://github.com/shotdog/scheduler/raw/master/screenshot/4.png)
-
-![image](https://github.com/shotdog/scheduler/raw/master/screenshot/5.png)
-
-![image](https://github.com/shotdog/scheduler/raw/master/screenshot/6.png)
-
-![image](https://github.com/shotdog/scheduler/raw/master/screenshot/7.png)
 
 #### 5、Protocol
 * see [invoker.go](https://github.com/shotdog/scheduler/blob/master/invoker/invoker.go)
